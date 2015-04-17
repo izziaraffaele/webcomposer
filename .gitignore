@@ -1,0 +1,5 @@
+/app/
+/vendor/
+composer.lock
+.php-version
+.phpintel
