@@ -1,5 +1,5 @@
 <?php
-namespace WebComposer\Tests\Utils;
+namespace WebComposer\Tests\Provider;
 
 use WebComposer\BaseTest;
 use WebComposer\Provider\ConfigServiceProvider;
