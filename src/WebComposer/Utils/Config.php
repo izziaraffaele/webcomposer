@@ -10,19 +10,60 @@ use Igorw\Silex\YamlConfigDriver;
 use Igorw\Silex\JsonConfigDriver;
 use Igorw\Silex\TomlConfigDriver;
 
+/**
+ * Config
+ * Based on https://github.com/igorw/ConfigServiceProvider it can read multiple config file type
+ * and stores data internally. You can than read all data or single items.
+ *
+ * @author Izzia Raffaele <izziaraffaele@gmail.com>
+ * @package WebComposer
+ * @subpackage Utils
+ * @see https://github.com/igorw/ConfigServiceProvider
+ * @copyright Copyright (c) 2015, Izzia Raffaele
+ */
 class Config{
-
+    /**
+     * Base path for config files
+     * @var string
+     */
     private $basePath;
+
+    /**
+     * Environment
+     * @var string
+     */
     private $environment;
+
+    /**
+     * Tags to replace in config files
+     * @var array
+     */
     private $replacements = [];
+
+    /**
+     * Contains current config items
+     * @var arrat
+     */
     private $_config = [];
 
+    /**
+     * __construct
+     * 
+     * @param string $path        Base path for config files
+     * @param string $environment App environment
+     */
     public function __construct($path = '', $environment = 'development')
     {
         $this->basePath = rtrim($path);
         $this->environment = $environment;
     }
 
+    /**
+     * Load specific config file
+     * 
+     * @param  string $filename Path to config file
+     * @return void
+     */
     public function loadFile($filename)
     {
         $config = $this->readConfig($filename);
@@ -34,16 +75,35 @@ class Config{
         $this->merge($config);
     }
 
+    /**
+     * Return single config item
+     * 
+     * @param  string $item Item slug to retrive
+     * @return mixed
+     */
     public function getItem($item)
     {
         return ( isset($this->_config[$item]) ) ? $this->_config[$item] : null;
     }
 
+    /**
+     * Return all config items
+     * 
+     * @return array
+     */
     public function getAllItems()
     {
         return $this->_config;
     }
 
+    /**
+     * Read file
+     *
+     * @access private
+     * @param  string            $filename File to read
+     * @param  ConfigDriver|null $driver   Config driver
+     * @return void
+     */
     private function readConfig($filename, ConfigDriver $driver = null)
     {
         if (!$filename) {
@@ -79,6 +139,13 @@ class Config{
                 sprintf("The config file '%s' appears to have an invalid format.", $filename));
     }
 
+    /**
+     * Merges current configuration with new items
+     *
+     * @access private
+     * @param  array  $config New items
+     * @return void
+     */
     private function merge(array $config)
     {
         foreach ($config as $name => $value) {
@@ -90,6 +157,14 @@ class Config{
         }
     }
 
+    /**
+     * Merges recursively config items
+     *
+     * @access private
+     * @param  array  $currentValue 
+     * @param  array  $newValue 
+     * @return void
+     */
     private function mergeRecursively(array $currentValue, array $newValue)
     {
         foreach ($newValue as $name => $value) {
@@ -103,6 +178,13 @@ class Config{
         return $currentValue;
     }
 
+    /**
+     * Replace tags in config files
+     *
+     * @access private
+     * @param  mixed  $value  Values to replace 
+     * @return mixed 
+     */
     private function doReplacements($value)
     {
         if (!$this->replacements) {
