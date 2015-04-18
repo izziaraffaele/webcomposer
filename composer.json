@@ -1,5 +1,13 @@
 {
     "name": "WebComposer",
+    "description": "A suite of PHP components that you can use to compose your application",
+    "authors": [
+        {
+            "name": "Izzia Raffaele",
+            "email": "izziaraffaele@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.3",
         "silex/silex": "~1.2",
