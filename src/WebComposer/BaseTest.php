@@ -6,7 +6,7 @@ use Silex\Application;
 
 class BaseTest extends \PHPUnit_Framework_TestCase{
 
-    public static function createApplication()
+    public function createApplication()
     {
         $app = new Application;
         $app['debug'] = true;

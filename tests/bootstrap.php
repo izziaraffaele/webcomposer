@@ -1,5 +1,6 @@
 <?php
 
+define( 'ENVIRONMENT', 'test' );
 define( 'BASEPATH', dirname(__DIR__) );
 
 /**
