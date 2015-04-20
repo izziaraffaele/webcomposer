@@ -10,7 +10,6 @@ class Controller
 
     public function __construct($app)
     {
-        $app['twig.loader']->addLoader(new \Twig_Loader_Filesystem(__DIR__.'/Views'));
         $this->twig = $app['twig'];
     }
 }
