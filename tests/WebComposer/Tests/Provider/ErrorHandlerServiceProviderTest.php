@@ -1,7 +1,7 @@
 <?php
 namespace WebComposer\Tests\Provider;
 
-use WebComposer\TestCase;
+use WebComposer\Tests\TestCase;
 use WebComposer\Provider\ErrorHandlerServiceProvider;
 
 class ErrorHandlerServiceProviderTest extends TestCase{

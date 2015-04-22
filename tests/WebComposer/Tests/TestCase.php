@@ -1,6 +1,6 @@
 <?php
 
-namespace WebComposer;
+namespace WebComposer\Tests;
 
 use Silex\Application;
 
