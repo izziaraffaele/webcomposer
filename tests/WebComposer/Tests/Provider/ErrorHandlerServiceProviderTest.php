@@ -1,10 +1,10 @@
 <?php
 namespace WebComposer\Tests\Provider;
 
-use WebComposer\BaseTest;
+use WebComposer\TestCase;
 use WebComposer\Provider\ErrorHandlerServiceProvider;
 
-class ErrorHandlerServiceProviderTest extends BaseTest{
+class ErrorHandlerServiceProviderTest extends TestCase{
     protected $app;
 
     public function setup()

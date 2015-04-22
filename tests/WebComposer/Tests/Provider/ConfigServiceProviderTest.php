@@ -1,10 +1,10 @@
 <?php
 namespace WebComposer\Tests\Provider;
 
-use WebComposer\BaseTest;
+use WebComposer\TestCase;
 use WebComposer\Provider\ConfigServiceProvider;
 
-class ConfigServiceProviderTest extends BaseTest{
+class ConfigServiceProviderTest extends TestCase{
     protected $app;
 
     public function setup()
