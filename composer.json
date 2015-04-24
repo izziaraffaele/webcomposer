@@ -11,7 +11,8 @@
     "require": {
         "php": ">=5.3",
         "silex/silex": "~1.2",
-        "igorw/config-service-provider": "~1.2"
+        "igorw/config-service-provider": "~1.2",
+        "neutron/mongo-odm-silex-provider": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.5"
