@@ -1,6 +1,6 @@
 <?php
 
-namespace WebComposer\Utils;
+namespace WebComposer\Component\Core;
 
 use Silex\Application;
 use Igorw\Silex\ChainConfigDriver;

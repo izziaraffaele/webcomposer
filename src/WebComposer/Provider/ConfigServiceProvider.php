@@ -4,7 +4,7 @@ namespace WebComposer\Provider;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use WebComposer\Utils\Config;
+use WebComposer\Component\Core\Config;
 
 class ConfigServiceProvider implements ServiceProviderInterface{
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace WebComposer;
+namespace WebComposer\Component\Http;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
