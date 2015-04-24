@@ -1,6 +1,7 @@
 {
     "name": "izziaraffaele/webcomposer",
     "description": "A suite of PHP components that you can use to compose your application",
+    "version": "1.0.1",
     "authors": [
         {
             "name": "Izzia Raffaele",
