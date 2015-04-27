@@ -8,7 +8,7 @@ use WebComposer\Component\Core\Config;
 
 class ConfigServiceProvider implements ServiceProviderInterface{
 
-    public function register(Application $app)
+    public function register(Application $app, $replacements = array())
     {
         $environment = (isset($app['environment'])) ? $app['environment'] : 'development';
         $app['config'] = new Config($app['config.path'],$environment);
