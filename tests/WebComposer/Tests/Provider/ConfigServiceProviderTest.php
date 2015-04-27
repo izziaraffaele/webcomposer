@@ -47,4 +47,19 @@ class ConfigServiceProviderTest extends TestCase{
         $this->app['config']->loadFile('app.php');
         $this->assertTrue($this->app['config']->getItem('debug'));
     }
+
+    /**
+     * @depends testLoadFile
+     */
+    public function testReplacements()
+    {
+        $this->app['config.path'] = BASEPATH.'/app';
+        $this->app['environment'] = 'test';
+        $this->app->register(new ConfigServiceProvider());
+
+        $replaced_value = 'I was replaced';
+        $this->app['config']->setGlobalReplacements([ 'replace_me' => $replaced_value]);
+        $this->app['config']->loadFile('replacements.json');
+        $this->assertContains($replaced_value, $this->app['config']->getItem('to_replace'), 'Key was not replaced correctly', true);
+    }
 }

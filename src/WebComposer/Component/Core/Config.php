@@ -64,13 +64,14 @@ class Config{
      * @param  string $filename Path to config file
      * @return void
      */
-    public function loadFile($filename)
+    public function loadFile($filename, array $replacements = array())
     {
         $config = $this->readConfig($filename);
 
-        foreach ($config as $name => $value)
-            if ('%' === substr($name, 0, 1))
-                $this->replacements[$name] = (string) $value;
+        if( count($replacements) )
+        {
+            $this->setGlobalReplacements($replacements);
+        }
 
         $this->merge($config);
     }
@@ -96,6 +97,12 @@ class Config{
         return $this->_config;
     }
 
+    public function setGlobalReplacements(array $replacements)
+    {
+        foreach ($replacements as $key => $value) 
+            $this->replacements['%'.$key.'%'] = $value;
+    }
+
     /**
      * Read file
      *
@@ -109,7 +116,6 @@ class Config{
         if (!$filename) {
             throw new \RuntimeException('A valid configuration file must be passed before reading the config.');
         }
-
         if(file_exists($this->basePath.'/config/'.$this->environment.'/'.$filename))
         {
             $filepath = $this->basePath.'/config/'.$this->environment.'/'.$filename;
@@ -190,19 +196,15 @@ class Config{
         if (!$this->replacements) {
             return $value;
         }
-
         if (is_array($value)) {
             foreach ($value as $k => $v) {
                 $value[$k] = $this->doReplacements($v);
             }
-
             return $value;
         }
-
         if (is_string($value)) {
             return strtr($value, $this->replacements);
         }
-
         return $value;
     }
 }
