@@ -12,5 +12,10 @@ class Controller
     public function __construct(Application $app)
     {
         $this->twig = $app['twig'];
+        $this->register();
+    }
+
+    protected function register()
+    {
     }
 }
