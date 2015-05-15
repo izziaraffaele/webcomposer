@@ -64,6 +64,21 @@ class Config{
      * @param  string $filename Path to config file
      * @return void
      */
+    public function loadFiles(array $collection)
+    {
+        foreach ($collection as $filename) 
+        {
+            $config = $this->readConfig($filename);
+            $this->merge($config);
+        }
+    }
+
+    /**
+     * Load specific config file
+     * 
+     * @param  string $filename Path to config file
+     * @return void
+     */
     public function loadFile($filename, array $replacements = array())
     {
         $config = $this->readConfig($filename);
