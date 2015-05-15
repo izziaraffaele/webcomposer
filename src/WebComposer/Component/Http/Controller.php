@@ -5,17 +5,6 @@ namespace WebComposer\Component\Http;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 
-class Controller
+abstract class Controller
 {
-    protected $twig;
-
-    public function __construct(Application $app)
-    {
-        $this->twig = $app['twig'];
-        $this->register();
-    }
-
-    protected function register()
-    {
-    }
 }
