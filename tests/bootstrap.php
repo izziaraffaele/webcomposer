@@ -2,6 +2,7 @@
 
 define( 'ENVIRONMENT', 'test' );
 define( 'BASEPATH', dirname(__DIR__) );
+define( 'APPPATH', BASEPATH.'/app' );
 
 /**
  * Simple test harness for the time being, will delete it when I TDD out the 

@@ -15,10 +15,36 @@ use Silex\provider\TwigServiceProvider;
 
 class Application extends Container{
     /**
+     * __construct
+     * @param void
+     */
+    public function __construct(array $values = array())
+    {
+        parent::__construct($values);
+
+        // note that the only providers initialized at the start are the Config and Error handler. 
+        // The rest will be initialized by initialize() later on.
+        $this->initConfig();
+        $this->initErrorHandler();
+    }
+    /**
+     * Initialize the application
+     * Usually called in the bootstrap file
+     * @return void
+     */
+    public function initialize()
+    {
+        $this->initCache();
+        $this->initTemplate();
+        $this->initProviders();
+        $this->initControllers();
+        $this->initRoutes();
+    }
+    /**
      * Initialize config service provider
      * @return void
      */
-    public function initConfig()
+    protected function initConfig()
     {
         $this->register(new Provider\ConfigServiceProvider());
     }
@@ -26,7 +52,7 @@ class Application extends Container{
      * Initialize error handlers
      * @return void
      */
-    public function initErrorHandler()
+    protected function initErrorHandler()
     {
         ErrorHandler::register();
         if ('cli' !== php_sapi_name()) 
@@ -67,12 +93,12 @@ class Application extends Container{
     public function initTemplate()
     {
         $this->register(new TwigServiceProvider());
-        $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
+        $this['twig'] = $this->share($this->extend('twig', function($twig, $app) {
             $twig->addPath(APPPATH.'/app/templates','app');
             $twig->addPath(APPPATH.'/app/views','app');
 
-            $appConfig = $this['config']->getItem('app');
-            if($appConfig['path.views'])
+            $appConfig = $app['config']->getItem('app');
+            if(isset($appConfig['path.views']))
             {
                 foreach ($appConfig['path.views'] as $path) 
                 {
@@ -85,8 +111,12 @@ class Application extends Container{
     }
     public function initProviders()
     {
-        $serviceRegisterProvider = new ServiceRegisterProvider();
-        $serviceRegisterProvider->registerServiceProviders($this, $this['config']->getItem('providers'));
+        $providers = $this['config']->getItem('providers');
+        if(isset($providers))
+        {
+            $serviceRegisterProvider = new ServiceRegisterProvider();
+            $serviceRegisterProvider->registerServiceProviders($this, $this['config']->getItem('providers'));
+        }
     }
     public function initControllers()
     {
@@ -95,7 +125,7 @@ class Application extends Container{
         {
             foreach ( $controllers as $name => $controllerClass) 
             {
-                $app['controller.'.$name] = $app->share(function() use ( $controllerClass ) {
+                $this['controller.'.$name] = $this->share(function() use ( $controllerClass ) {
                     return new $controllerClass();
                 });
             }
@@ -103,15 +133,24 @@ class Application extends Container{
     }
     public function initRoutes()
     {
-        $router = new RoutingServiceProvider();
-        $router->addRoutes($app, $app['config']->getItem('routes'));
+        $routes = $this['config']->getItem('routes');
+        if(isset($routes))
+        {
+            $router = new RoutingServiceProvider();
+            $router->addRoutes($this, $this['config']->getItem('routes'));
+        }
     }
     public function initCache()
     {
-        $appConfig = $this['config']->getItem('app')
+        $appConfig = $this['config']->getItem('app');
         $cachePath = $appConfig['cache_path'] ?: BASEPATH.'/storage';
         $root = $cachePath.'/'.ENVIRONMENT;
 
-        $this['twig.options'] = ['cache' => $root.'/twig'];
+        if(!$this['debug'])
+        {
+            $this['twig.options'] = ['cache' => $root.'/twig'];
+        }
+
+        $this['cache.path'] = $root;
     }
 }
