@@ -9,6 +9,8 @@ use Symfony\Component\Debug\ExceptionHandler;
 use Symfony\Component\HttpFoundation\Response;
 use Whoops\Provider\Silex\WhoopsServiceProvider;
 use Silex\Provider\ServiceControllerServiceProvider;
+use Silex\Provider\UrlGeneratorServiceProvider;
+use Silex\Provider\MonologServiceProvider;
 use MJanssen\Provider\ServiceRegisterProvider;
 use MJanssen\Provider\RoutingServiceProvider;
 use Silex\provider\TwigServiceProvider;
@@ -22,10 +24,10 @@ class Application extends Container{
     {
         parent::__construct($values);
 
-        // note that the only providers initialized at the start are the Config and Error handler. 
+        // note that the only provider initialized at the start is Config 
         // The rest will be initialized by initialize() later on.
         $this->initConfig();
-        $this->initErrorHandler();
+        $this->initLogger();
     }
     /**
      * Initialize the application
@@ -36,6 +38,7 @@ class Application extends Container{
     {
         $this->initCache();
         $this->initTemplate();
+        $this->initErrorHandler();
         $this->initProviders();
         $this->initControllers();
         $this->initRoutes();
@@ -93,21 +96,18 @@ class Application extends Container{
     public function initTemplate()
     {
         $this->register(new TwigServiceProvider());
-        $this['twig'] = $this->share($this->extend('twig', function($twig, $app) {
-            $twig->addPath(APPPATH.'/app/templates','app');
-            $twig->addPath(APPPATH.'/app/views','app');
-
-            $appConfig = $app['config']->getItem('app');
-            if(isset($appConfig['path.views']))
+        $loader = new \Twig_Loader_Filesystem();
+        $loader->addPath(APPPATH.'/templates','app');
+        $loader->addPath(APPPATH.'/views','app');
+        $appConfig = $this['config']->getItem('app');
+        if(isset($appConfig['path.views']))
+        {
+            foreach ($appConfig['path.views'] as $path) 
             {
-                foreach ($appConfig['path.views'] as $path) 
-                {
-                    $twig->addPath($path,'app');
-                }
+                $loader->addPath($path,'app');
             }
-
-            return $twig;
-        }));
+        }
+        $this['twig.loader']->addLoader($loader);
     }
     public function initProviders()
     {
@@ -120,6 +120,8 @@ class Application extends Container{
     }
     public function initControllers()
     {
+        $this->register(new UrlGeneratorServiceProvider());
+        $this->register(new ServiceControllerServiceProvider());
         $controllers = $this['config']->getItem('controllers');
         if(isset($controllers))
         {
@@ -143,14 +145,25 @@ class Application extends Container{
     public function initCache()
     {
         $appConfig = $this['config']->getItem('app');
-        $cachePath = $appConfig['cache_path'] ?: BASEPATH.'/storage';
-        $root = $cachePath.'/'.ENVIRONMENT;
+        $root = $appConfig['cache_path'] ?: STORAGEPATH.'/'.ENVIRONMENT;
 
         if(!$this['debug'])
         {
-            $this['twig.options'] = ['cache' => $root.'/twig'];
+            $this['twig.options'] = ['cache' => rtrim($root).'/cache/twig'];
         }
 
         $this['cache.path'] = $root;
+    }
+    public function initLogger()
+    {
+        $appConfig = $this['config']->getItem('app');
+        $root = $appConfig['log_path'] ?: STORAGEPATH.'/'.ENVIRONMENT;
+        $filename = date('d-m-Y').'-app.log';
+
+        $this->register(new MonologServiceProvider,[
+            'monolog.logfile' => rtrim($root).'/logs/'.$filename,
+            'monolog.level' => $appConfig['log.level'],
+            'monolog.name' => 'app'
+        ]);
     }
 }
